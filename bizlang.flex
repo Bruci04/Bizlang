@@ -1,10 +1,9 @@
-package bizlang;
+package Bizlang;
 import java_cup.runtime.Symbol;
-
 %%
 %class BizLangLexer
 %unicode
-%cup  // Indica que generará tokens compatibles con CUP
+%cup  // Tokens compatibles con CUP
 /* Declaración de patrones regulares */
 %{
     // Método auxiliar para devolver tokens
@@ -28,4 +27,4 @@ import java_cup.runtime.Symbol;
 [0-9]+              { return symbol(sym.NUMERO, Integer.parseInt(yytext())); }  // Números enteros
 
 [ \t\r\n\f]+        { /* Ignorar espacios en blanco */ }
-.                   { System.err.println("❌ Caracter no reconocido: " + yytext()); }
+.                   { System.err.println("Caracter no reconocido: " + yytext()); }
