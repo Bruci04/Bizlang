@@ -27,4 +27,7 @@ import java_cup.runtime.Symbol;
 [0-9]+              { return symbol(sym.NUMERO, Integer.parseInt(yytext())); }  // Números enteros
 
 [ \t\r\n\f]+        { /* Ignorar espacios en blanco */ }
-.                   { System.err.println("Error léxico: Carácter no reconocido '" + yytext() + "' en línea " + yyline + ", columna " + yycolumn); }
+. {
+    System.err.println("Error léxico: Carácter no reconocido '" + yytext() + "' en línea " + yyline + ", columna " + yycolumn);
+    return symbol(sym.error); // Retorna token especial de error
+}

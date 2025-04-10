@@ -16,21 +16,28 @@ start with programa;
 
 // Reglas de producción del lenguaje
 programa ::= comando;
-
+comando ::= error
+  {:
+    System.err.println("❌ Comando inválido. No se ejecutó ninguna acción.");
+  :};
 comando ::= COMANDO:T TEXTO:X NUMERO:N
   {:
     if (T.equals("agregar")) {
         System.out.println("🛒 Agregando " + X + " con cantidad " + N);
-        Inventario.agregarProducto();
+        Inventario.agregarProducto(X, N.intValue());
     } else if (T.equals("vender")) {
         System.out.println("Se vende " + X + " con el precio " + N);
-        Inventario.registrarVenta(X, N.intValue());
-    } else if (T.equals("mostrar_inventario")) {
-        System.out.println("Mostrando inventario...");
-        Inventario.mostrarInventario();
-    } else if (T.equals("generar_reporte")) {
-        System.out.println("Generando reporte de ventas...");
-        Inventario.generReportePDF();
+        Inventario.venderProducto(X, N.intValue());
     }
   :};
+  comando ::= COMANDO:T
+    {:
+      if (T.equals("mostrar_inventario")) {
+          System.out.println("📦 Mostrando inventario...");
+          Inventario.mostrarInventario();
+      } else if (T.equals("generar_reporte")) {
+          System.out.println("📊 Generando reporte de ventas...");
+          Inventario.generReportePDF();
+      }
+    :};
 
