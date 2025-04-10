@@ -21,14 +21,16 @@ comando ::= COMANDO:T TEXTO:X NUMERO:N
   {:
     if (T.equals("agregar")) {
         System.out.println("🛒 Agregando " + X + " con cantidad " + N);
+        Inventario.agregarProducto();
     } else if (T.equals("vender")) {
         System.out.println("Se vende " + X + " con el precio " + N);
-        bizlang.Inventario.registrarVenta(X, N.intValue());
+        Inventario.registrarVenta(X, N.intValue());
     } else if (T.equals("mostrar_inventario")) {
         System.out.println("Mostrando inventario...");
+        Inventario.mostrarInventario();
     } else if (T.equals("generar_reporte")) {
         System.out.println("Generando reporte de ventas...");
-        bizlang.Inventario.generReportePDF();
+        Inventario.generReportePDF();
     }
   :};
 
