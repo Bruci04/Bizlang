@@ -1,0 +1,34 @@
+// Código Java que se incluirá en el parser
+import java_cup.runtime.*;
+import Inventario;
+import java_cup.runtime.Symbol;
+
+// Definir tokens provenientes del analizador léxico (JFlex)
+terminal String TEXTO;
+terminal String COMANDO;
+terminal Integer NUMERO;
+
+// Definir no terminales
+nonterminal programa, comando;
+
+// Definir el inicio del análisis sintáctico
+start with programa;
+
+// Reglas de producción del lenguaje
+programa ::= comando;
+
+comando ::= COMANDO:T TEXTO:X NUMERO:N
+  {:
+    if (T.equals("agregar")) {
+        System.out.println("🛒 Agregando " + X + " con cantidad " + N);
+    } else if (T.equals("vender")) {
+        System.out.println("Se vende " + X + " con el precio " + N);
+        bizlang.Inventario.registrarVenta(X, N.intValue());
+    } else if (T.equals("mostrar_inventario")) {
+        System.out.println("Mostrando inventario...");
+    } else if (T.equals("generar_reporte")) {
+        System.out.println("Generando reporte de ventas...");
+        bizlang.Inventario.generReportePDF();
+    }
+  :};
+
