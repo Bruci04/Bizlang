@@ -82,13 +82,22 @@ public class Main extends JFrame {
     private void ejecutarCodigo() {
         outputPane.setText(""); // Limpiar consola
         String input = inputArea.getText();
-        try {
-            BizLangLexer lexer = new BizLangLexer(new StringReader(input));
-            Parser parser = new Parser(lexer);
-            parser.parse();
-            println("✅ Comando ejecutado correctamente.", estiloNormal);
-        } catch (Exception ex) {
-            println("❌ Error al ejecutar BizLang: " + ex.getMessage(), estiloError);
+        String[] lineas = input.split("\\n"); // Divido el texto en lineas independientes
+
+        for (String linea : lineas) {
+            linea = linea.trim();
+            // Analiza linea por linea
+            if (!linea.isEmpty()) {
+                try {
+                    BizLangLexer lexer = new BizLangLexer(new StringReader(linea));
+                    Parser parser = new Parser(lexer);
+                    parser.parse();
+                    println(" Ejecutado: " + linea, estiloNormal);
+                } catch (Exception ex) {
+                    println(" Error en: " + linea, estiloError);
+                    println("   ↳ " + ex.getMessage(), estiloError);
+                }
+            }
         }
     }
 

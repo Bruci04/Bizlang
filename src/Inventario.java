@@ -1,4 +1,7 @@
 
+import javax.swing.*;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.util.*;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -30,16 +33,20 @@ public class Inventario {
     }
 
     public static void generReportePDF() {
-        try {
-            FileWriter writer = new FileWriter("reporte_ventas.txt");
-            writer.write("📜 Reporte de Ventas\n");
-            for (String venta : ventas) {
-                writer.write(venta + "\n");
-            }
-            writer.close();
-            System.out.println("📄 Reporte generado correctamente.");
-        } catch (IOException e) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Guardar Reporte de Ventas");
+        int seleccion = fileChooser.showSaveDialog(null);
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            File archivo = fileChooser.getSelectedFile();
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivo))) {
+                writer.write("📜 Reporte de Ventas\n");
+                for (String venta : ventas) { // Asegúrate de que esta lista esté disponible y sea accesible
+                    writer.write(venta + "\n");
+                }
+
+            } catch (IOException e) {
             System.err.println("❌ Error al generar el reporte.");
+        }
         }
     }
 }
