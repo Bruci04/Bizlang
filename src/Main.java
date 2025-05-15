@@ -13,7 +13,7 @@ public class Main extends JFrame {
     private Style estiloNormal, estiloError;
 
     public Main() {
-        setTitle("💼 BizLang Chat IDE");
+        setTitle("💼 BizLang IDE");
         setSize(750, 650);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -123,23 +123,54 @@ public class Main extends JFrame {
     }
 
     private void ejecutarCodigo() {
-        outputPane.setText("");
-        String[] lineas = inputArea.getText().split("\\n");
-        for (String linea : lineas) {
-            linea = linea.trim();
-            if (!linea.isEmpty()) {
-                try {
-                    BizLangLexer lexer = new BizLangLexer(new StringReader(linea));
-                    Parser parser = new Parser(lexer);
-                    parser.parse();
-                    println("🟢 Ejecutado: " + linea, estiloNormal);
-                } catch (Exception ex) {
-                    println("🔴 Error en: " + linea, estiloError);
-                    println("   ↳ " + ex.getMessage(), estiloError);
-                }
+        String linea = inputArea.getText().trim();
+        if (linea.isEmpty()) {
+            return;
+        }
+
+        ejecutarYMostrar(() -> {
+            try {
+                BizLangLexer lexer = new BizLangLexer(new StringReader(linea));
+                Parser parser = new Parser(lexer);
+                parser.parse(); // Ejecutar el código BizLang
+            } catch (Exception e) {
+                System.err.println("❌ Error de ejecución: " + e.getMessage());
             }
+        });
+    }
+
+    private void ejecutarYMostrar(Runnable tarea) {
+        ByteArrayOutputStream baosOut = new ByteArrayOutputStream();
+        ByteArrayOutputStream baosErr = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        PrintStream originalErr = System.err;
+
+        System.setOut(new PrintStream(baosOut));
+        System.setErr(new PrintStream(baosErr));
+
+        try {
+            tarea.run();
+        } finally {
+            System.setOut(originalOut);
+            System.setErr(originalErr);
+        }
+
+        String salida = baosOut.toString().trim();
+        String errores = baosErr.toString().trim();
+
+        if (!errores.isEmpty()) {
+            println("❌ " + errores, estiloError);
+        }
+
+        if (!salida.isEmpty()) {
+            println(salida, estiloNormal);
+        }
+
+        if (errores.isEmpty() && !salida.contains("❌")) {
+            println("🟢 Ejecutado correctamente.", estiloNormal);
         }
     }
+
 
     private void abrirArchivo() {
         JFileChooser chooser = new JFileChooser();
