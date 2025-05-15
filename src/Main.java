@@ -2,6 +2,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.io.*;
 
 public class Main extends JFrame {
@@ -68,17 +69,11 @@ public class Main extends JFrame {
         JScrollPane inputScroll = new JScrollPane(inputArea);
         inputScroll.setBorder(BorderFactory.createEmptyBorder());
 
-        // Botón circular con flecha - ahora con tamaño fijo que no se distorsiona
-        ejecutarButton = new JButton("▶");
-        ejecutarButton.setPreferredSize(new Dimension(60, 60)); // Tamaño fijo
-        ejecutarButton.setMinimumSize(new Dimension(60, 60)); // Evita que se haga más pequeño
-        ejecutarButton.setMaximumSize(new Dimension(60, 60)); // Evita que se haga más grande
-        ejecutarButton.setBackground(new Color(0, 153, 255));
-        ejecutarButton.setForeground(Color.WHITE);
-        ejecutarButton.setFont(new Font("Segoe UI Symbol", Font.BOLD, 22));
-        ejecutarButton.setFocusPainted(false);
-        ejecutarButton.setBorder(new CircleBorder());
-        ejecutarButton.setContentAreaFilled(true);
+        // Botón redondeado con fondo y tamaño fijo
+        ejecutarButton = new RoundedButton("▶");
+        ejecutarButton.setPreferredSize(new Dimension(60, 60));
+        ejecutarButton.setMinimumSize(new Dimension(60, 60));
+        ejecutarButton.setMaximumSize(new Dimension(60, 60));
         ejecutarButton.addActionListener(e -> {
             ejecutarCodigo();
             inputArea.setText(""); // Limpia el cuadro de texto después de ejecutar
@@ -214,7 +209,7 @@ public class Main extends JFrame {
         SwingUtilities.invokeLater(() -> new Main().setVisible(true));
     }
 
-    // Borde redondeado
+    // Borde redondeado para JTextArea
     static class RoundedBorder implements Border {
         private final int radius;
 
@@ -241,22 +236,45 @@ public class Main extends JFrame {
         }
     }
 
-    // Borde circular para el botón de ejecutar
-    static class CircleBorder implements Border {
-        @Override
-        public Insets getBorderInsets(Component c) {
-            return new Insets(5, 5, 5, 5);
+    // Botón redondeado con fondo redondeado para evitar que color se salga
+    static class RoundedButton extends JButton {
+        private int radius = 30;
+
+        public RoundedButton(String label) {
+            super(label);
+            setOpaque(false);
+            setFocusPainted(false);
+            setContentAreaFilled(false);
+            setForeground(Color.WHITE);
+            setBackground(new Color(0, 153, 255));
+            setFont(new Font("Segoe UI Symbol", Font.BOLD, 22));
         }
 
         @Override
-        public boolean isBorderOpaque() {
-            return true;
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getBackground());
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
+            super.paintComponent(g2);
+            g2.dispose();
         }
 
         @Override
-        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
-            g.setColor(Color.DARK_GRAY);
-            g.drawOval(x, y, width - 1, height - 1);
+        protected void paintBorder(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getForeground().darker());
+            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
+            g2.dispose();
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            Dimension size = super.getPreferredSize();
+            size.width = Math.max(size.width, 60);
+            size.height = Math.max(size.height, 60);
+            return size;
         }
     }
 }
