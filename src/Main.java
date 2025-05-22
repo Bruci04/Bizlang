@@ -123,20 +123,22 @@ public class Main extends JFrame {
     }
 
     private void ejecutarCodigo() {
-        String linea = inputArea.getText().trim();
-        if (linea.isEmpty()) {
-            return;
-        }
-
-        ejecutarYMostrar(() -> {
-            try {
-                BizLangLexer lexer = new BizLangLexer(new StringReader(linea));
-                Parser parser = new Parser(lexer);
-                parser.parse(); // Ejecutar el código BizLang
-            } catch (Exception e) {
-                System.err.println("❌ Error de ejecución: " + e.getMessage());
+        String[] lineas = inputArea.getText().split("\\n");
+        for (String linea : lineas) {
+            linea = linea.trim();
+            if (!linea.isEmpty()) {
+                String finalLinea = linea;
+                ejecutarYMostrar(() -> {
+                    try {
+                        BizLangLexer lexer = new BizLangLexer(new StringReader(finalLinea));
+                        Parser parser = new Parser(lexer);
+                        parser.parse(); // Ejecutar el código BizLang
+                    } catch (Exception e) {
+                        System.err.println("❌ Error de ejecución: " + e.getMessage());
+                    }
+                });
             }
-        });
+        }
     }
 
     private void ejecutarYMostrar(Runnable tarea) {
