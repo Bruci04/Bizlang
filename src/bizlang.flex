@@ -14,6 +14,8 @@ import java_cup.runtime.Symbol;
     private Symbol symbol(int type, Object value) {
         return new Symbol(type, yyline, yycolumn, value);
     }
+    public int getLine() { return yyline + 1; }
+    public int getColumn() { return yycolumn + 1; }
 %}
 
 /*Expresiones regulares y comandos */

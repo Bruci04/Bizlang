@@ -19,6 +19,7 @@ programa ::= comando;
 comando ::= error
   {:
     System.err.println("❌ Comando inválido. No se ejecutó ninguna acción.");
+
   :};
 comando ::= COMANDO:T TEXTO:X NUMERO:N
   {:

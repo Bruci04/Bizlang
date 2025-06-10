@@ -92,7 +92,7 @@ public class Main extends JFrame {
 
         inputPanel.add(buttonPanel, BorderLayout.EAST);
 
-        add(inputPanel, BorderLayout.SOUTH); // 🔵 ABAJO
+        add(inputPanel, BorderLayout.SOUTH);
 
         setJMenuBar(crearMenuBar());
         redirectSystemStreams();
@@ -132,7 +132,7 @@ public class Main extends JFrame {
                     try {
                         BizLangLexer lexer = new BizLangLexer(new StringReader(finalLinea));
                         Parser parser = new Parser(lexer);
-                        parser.parse(); // Ejecutar el código BizLang
+                        parser.parse();
                     } catch (Exception e) {
                         System.err.println("❌ Error de ejecución: " + e.getMessage());
                     }
@@ -162,6 +162,11 @@ public class Main extends JFrame {
 
         if (!errores.isEmpty()) {
             println("❌ " + errores, estiloError);
+
+            int lineaError = extraerNumeroLinea(errores);
+            if (lineaError > 0) {
+                resaltarLineaError(lineaError);
+            }
         }
 
         if (!salida.isEmpty()) {
@@ -199,6 +204,31 @@ public class Main extends JFrame {
             }
         }
     }
+    private void resaltarLineaError(int numeroLinea) {
+        Highlighter highlighter = inputArea.getHighlighter();
+        highlighter.removeAllHighlights(); // Limpia anteriores
+
+        try {
+            int startOffset = inputArea.getLineStartOffset(numeroLinea - 1);
+            int endOffset = inputArea.getLineEndOffset(numeroLinea - 1);
+            highlighter.addHighlight(startOffset, endOffset,
+                    new DefaultHighlighter.DefaultHighlightPainter(new Color(255, 102, 102)));
+        } catch (BadLocationException e) {
+            println("No se pudo resaltar la línea de error.", estiloError);
+        }
+    }
+    private int extraerNumeroLinea(String mensaje) {
+        try {
+            // Buscar algo como "línea 3"
+            java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("línea\\s+(\\d+)").matcher(mensaje);
+            if (matcher.find()) {
+                return Integer.parseInt(matcher.group(1));
+            }
+        } catch (Exception ignored) {}
+        return -1;
+    }
+
+
 
     private void redirectSystemStreams() {
         PrintStream ps = new PrintStream(new OutputStream() {
